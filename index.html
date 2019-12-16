@@ -2,7 +2,7 @@
 <html>
 <head><meta charset="utf-8" />
 
-<title>FinalProject_Version5</title>
+<title>FinalProject_Version7</title>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.1.10/require.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
@@ -13133,7 +13133,7 @@ div#notebook {
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
 <h1 id="Introduction">Introduction<a class="anchor-link" href="#Introduction">&#182;</a></h1><p>In the National Basketball Association (NBA), every season there is an All Star Game where the best players in the league play in a single game just for fun. The way these players are determined are by 3 sets of votes. The first set of votes come from the fans, the second set comes from the players in the league, and the third set of votes come from the NBA media. Whether you're a fan, a player, or a member of the media, you get a total of 5 votes (3 guards and 2 forwards). This project will focus on the player votes.</p>
-<p>Using player statistics from last year's season, we will first see which how many votes each player got last season. Then we will use the player statistics and the votes they recieved to see which stats (such as points per game, or rebounds per game) other NBA players value the most in voting so we can get a better idea of what makes up an NBA All Star</p>
+<p>Using player statistics from last year's season, we will first see which how many votes each player got last season. Then we will use the player statistics and the votes they recieved to see which stats (such as points per game, or rebounds per game) other NBA players value the most in voting so we can get a better idea of what makes up an NBA All Star. We will also use Machine Learning to compare the effect of player statistics on Ratings and Votes. As, it seems to be a universal arguement that the most skilled players are also the most popular players.</p>
 
 </div>
 </div>
@@ -13157,7 +13157,7 @@ div#notebook {
 <li>3.2 Analyzing Giannis Antetokounmpo</li>
 </ul>
 <h3 id="4.-Linear-Regression-for-Attributes-on-Rating-and-Votes">4. Linear Regression for Attributes on Rating and Votes<a class="anchor-link" href="#4.-Linear-Regression-for-Attributes-on-Rating-and-Votes">&#182;</a></h3><ul>
-<li>4.1 Null Hypotheses</li>
+<li>4.1 Linear Regression Models for Ratings and Votes</li>
 <li>4.2 Prediction of Ratings vs Prediction of Votes</li>
 </ul>
 <h3 id="5.-Conclusion">5. Conclusion<a class="anchor-link" href="#5.-Conclusion">&#182;</a></h3><ul>
@@ -13172,14 +13172,21 @@ div#notebook {
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h1 id="1.-Getting-Started">1. Getting Started<a class="anchor-link" href="#1.-Getting-Started">&#182;</a></h1><h2 id="1.1-Libraries">1.1 Libraries<a class="anchor-link" href="#1.1-Libraries">&#182;</a></h2><p>Someone describe each of the libraries when we are done with them all. These are NOT all the libraries</p>
+<h1 id="1.-Getting-Started">1. Getting Started<a class="anchor-link" href="#1.-Getting-Started">&#182;</a></h1><h2 id="1.1-Libraries">1.1 Libraries<a class="anchor-link" href="#1.1-Libraries">&#182;</a></h2><h4 id="requests:">requests:<a class="anchor-link" href="#requests:">&#182;</a></h4><p>For HTTP requests</p>
+<h4 id="numpy:">numpy:<a class="anchor-link" href="#numpy:">&#182;</a></h4><p>For containing data</p>
+<h4 id="re:">re:<a class="anchor-link" href="#re:">&#182;</a></h4><p>For regular expressions</p>
+<h4 id="datetime:">datetime:<a class="anchor-link" href="#datetime:">&#182;</a></h4><p>For date and time objects</p>
+<h4 id="matplotlib/seaborn:">matplotlib/seaborn:<a class="anchor-link" href="#matplotlib/seaborn:">&#182;</a></h4><p>For plotting</p>
+<h4 id="html5lib:">html5lib:<a class="anchor-link" href="#html5lib:">&#182;</a></h4><p>For parsing HTML</p>
+<h4 id="pandas:">pandas:<a class="anchor-link" href="#pandas:">&#182;</a></h4><p>For data manipulation</p>
+<h4 id="sklearn:">sklearn:<a class="anchor-link" href="#sklearn:">&#182;</a></h4><p>For Machine Learning</p>
 
 </div>
 </div>
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[79]:</div>
+<div class="prompt input_prompt">In&nbsp;[29]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="kn">import</span> <span class="nn">requests</span>
@@ -13191,16 +13198,12 @@ div#notebook {
 <span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
 <span class="kn">from</span> <span class="nn">matplotlib.gridspec</span> <span class="k">import</span> <span class="n">GridSpec</span>
 <span class="kn">import</span> <span class="nn">seaborn</span> <span class="k">as</span> <span class="nn">sns</span>
-<span class="kn">import</span> <span class="nn">statsmodels.api</span> <span class="k">as</span> <span class="nn">sm</span>
 <span class="kn">import</span> <span class="nn">sklearn</span>
-<span class="kn">from</span> <span class="nn">patsy</span> <span class="k">import</span> <span class="n">dmatrices</span>
-<span class="kn">from</span> <span class="nn">sklearn</span> <span class="k">import</span> <span class="n">datasets</span>
 <span class="kn">import</span> <span class="nn">html5lib</span>
 <span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
 <span class="kn">from</span> <span class="nn">sklearn.linear_model</span> <span class="k">import</span> <span class="n">LinearRegression</span>
 <span class="kn">from</span> <span class="nn">sklearn.linear_model</span> <span class="k">import</span> <span class="n">LogisticRegression</span>
 <span class="kn">from</span> <span class="nn">sklearn.model_selection</span> <span class="k">import</span> <span class="n">train_test_split</span> 
-<span class="kn">from</span> <span class="nn">statsmodels</span> <span class="k">import</span> <span class="n">api</span> <span class="k">as</span> <span class="n">sm</span>
 </pre></div>
 
     </div>
@@ -13236,7 +13239,7 @@ div#notebook {
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[80]:</div>
+<div class="prompt input_prompt">In&nbsp;[30]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">NBA_Players</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="s2">&quot;nbastats2018-2019.csv&quot;</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="s1">&#39;,&#39;</span><span class="p">)</span>
@@ -13258,7 +13261,7 @@ div#notebook {
 
 <div class="output_area">
 
-    <div class="prompt output_prompt">Out[80]:</div>
+    <div class="prompt output_prompt">Out[30]:</div>
 
 
 
@@ -13638,7 +13641,7 @@ div#notebook {
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[81]:</div>
+<div class="prompt input_prompt">In&nbsp;[31]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">Ratings</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="s2">&quot;Nba 19 ratings.csv&quot;</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="s1">&#39;,&#39;</span><span class="p">)</span>
@@ -13657,7 +13660,7 @@ div#notebook {
 
 <div class="output_area">
 
-    <div class="prompt output_prompt">Out[81]:</div>
+    <div class="prompt output_prompt">Out[31]:</div>
 
 
 
@@ -13761,7 +13764,7 @@ div#notebook {
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[82]:</div>
+<div class="prompt input_prompt">In&nbsp;[32]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">urls</span> <span class="o">=</span> <span class="p">[[</span><span class="s2">&quot;https://www.basketball-reference.com/allstar/NBA_2019_voting-frontcourt-eastern-conference.html&quot;</span><span class="p">,</span><span class="s2">&quot;East&quot;</span><span class="p">,</span><span class="s2">&quot;Forward&quot;</span><span class="p">],</span>
@@ -13814,7 +13817,7 @@ div#notebook {
 
 <div class="output_area">
 
-    <div class="prompt output_prompt">Out[82]:</div>
+    <div class="prompt output_prompt">Out[32]:</div>
 
 
 
@@ -13936,7 +13939,7 @@ We will also sort the values by votes.</p>
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[83]:</div>
+<div class="prompt input_prompt">In&nbsp;[33]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">Complete_Data</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">merge</span><span class="p">(</span><span class="n">NBA_Players</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">merge</span><span class="p">(</span><span class="n">Ratings</span><span class="p">,</span> <span class="n">Player_Votes</span><span class="p">,</span> <span class="n">on</span><span class="o">=</span><span class="s1">&#39;Name&#39;</span><span class="p">),</span> <span class="n">on</span><span class="o">=</span><span class="s1">&#39;Name&#39;</span><span class="p">)</span>
@@ -13955,7 +13958,7 @@ We will also sort the values by votes.</p>
 
 <div class="output_area">
 
-    <div class="prompt output_prompt">Out[83]:</div>
+    <div class="prompt output_prompt">Out[33]:</div>
 
 
 
@@ -14391,7 +14394,7 @@ We will also sort the values by votes.</p>
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[84]:</div>
+<div class="prompt input_prompt">In&nbsp;[34]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">Complete_Data</span> <span class="o">=</span> <span class="n">Complete_Data</span><span class="p">[[</span><span class="s1">&#39;Name&#39;</span><span class="p">,</span> <span class="s1">&#39;Position&#39;</span><span class="p">,</span> <span class="s1">&#39;Conference&#39;</span><span class="p">,</span> <span class="s1">&#39;Votes&#39;</span><span class="p">,</span> <span class="s1">&#39;Rating&#39;</span><span class="p">,</span> <span class="s1">&#39;Points&#39;</span><span class="p">,</span> <span class="s1">&#39;Rebounds&#39;</span><span class="p">,</span> <span class="s1">&#39;Assists&#39;</span><span class="p">,</span> <span class="s1">&#39;Blocks&#39;</span><span class="p">,</span> <span class="s1">&#39;Steals&#39;</span><span class="p">,</span> <span class="s1">&#39;FG%&#39;</span><span class="p">,</span> <span class="s1">&#39;FG3%&#39;</span><span class="p">,</span> <span class="s1">&#39;FT%&#39;</span><span class="p">,</span> <span class="s1">&#39;PER&#39;</span><span class="p">]]</span>
@@ -14409,7 +14412,7 @@ We will also sort the values by votes.</p>
 
 <div class="output_area">
 
-    <div class="prompt output_prompt">Out[84]:</div>
+    <div class="prompt output_prompt">Out[34]:</div>
 
 
 
@@ -14640,14 +14643,14 @@ We will also sort the values by votes.</p>
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h2 id="2.1-Averages-of-Top-200-vs-Top-10-by-Position">2.1 Averages of Top 200 vs Top 10 by Position<a class="anchor-link" href="#2.1-Averages-of-Top-200-vs-Top-10-by-Position">&#182;</a></h2><p>Now that we have the Top 200 vote getters, we can now explore these players. What we will be doing first is dividing up the Top 200 players by position. First we will get all the guards and put them into a datframe. Then we will further analyze the top 10 guards and compare them to the rest of the guards. After we analyze the guards, we will repeat the process for the forwards.</p>
+<h2 id="2.1-Averages-of-Top-200-vs-Top-10-by-Position">2.1 Averages of Top 200 vs Top 10 by Position<a class="anchor-link" href="#2.1-Averages-of-Top-200-vs-Top-10-by-Position">&#182;</a></h2><p>Now that we have the Top 200 vote getters, we can now explore these players. What we will be doing first is dividing up the Top 200 players by position. First we will get all the guards and put them into a dataframe. Then we will further analyze the top 10 guards and compare them to the rest of the guards. After we analyze the guards, we will repeat the process for the forwards.</p>
 <h3 id="All-Guards-in-the-Top-200">All Guards in the Top 200<a class="anchor-link" href="#All-Guards-in-the-Top-200">&#182;</a></h3>
 </div>
 </div>
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[85]:</div>
+<div class="prompt input_prompt">In&nbsp;[35]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">Guards_In_Top_200</span> <span class="o">=</span> <span class="n">Top_200_Players</span><span class="p">[</span><span class="n">Top_200_Players</span><span class="p">[</span><span class="s1">&#39;Position&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;Guard&quot;</span><span class="p">]</span>
@@ -14676,7 +14679,7 @@ We will also sort the values by votes.</p>
 
 <div class="output_area">
 
-    <div class="prompt output_prompt">Out[85]:</div>
+    <div class="prompt output_prompt">Out[35]:</div>
 
 
 
@@ -14779,7 +14782,7 @@ We will also sort the values by votes.</p>
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[86]:</div>
+<div class="prompt input_prompt">In&nbsp;[36]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">Top_10_Guards</span> <span class="o">=</span> <span class="n">Guards_In_Top_200</span><span class="o">.</span><span class="n">head</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
@@ -14797,7 +14800,7 @@ We will also sort the values by votes.</p>
 
 <div class="output_area">
 
-    <div class="prompt output_prompt">Out[86]:</div>
+    <div class="prompt output_prompt">Out[36]:</div>
 
 
 
@@ -14909,7 +14912,7 @@ We will also sort the values by votes.</p>
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[87]:</div>
+<div class="prompt input_prompt">In&nbsp;[37]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">20</span><span class="p">,</span><span class="mi">10</span><span class="p">))</span>
@@ -14954,7 +14957,7 @@ We will also sort the values by votes.</p>
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[88]:</div>
+<div class="prompt input_prompt">In&nbsp;[38]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">Forwards_In_Top_200</span> <span class="o">=</span> <span class="n">Top_200_Players</span><span class="p">[</span><span class="n">Top_200_Players</span><span class="p">[</span><span class="s1">&#39;Position&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;Forward&quot;</span><span class="p">]</span>
@@ -14983,7 +14986,7 @@ We will also sort the values by votes.</p>
 
 <div class="output_area">
 
-    <div class="prompt output_prompt">Out[88]:</div>
+    <div class="prompt output_prompt">Out[38]:</div>
 
 
 
@@ -15086,7 +15089,7 @@ We will also sort the values by votes.</p>
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[89]:</div>
+<div class="prompt input_prompt">In&nbsp;[39]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">Top_10_Forwards</span> <span class="o">=</span> <span class="n">Forwards_In_Top_200</span><span class="o">.</span><span class="n">head</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
@@ -15104,7 +15107,7 @@ We will also sort the values by votes.</p>
 
 <div class="output_area">
 
-    <div class="prompt output_prompt">Out[89]:</div>
+    <div class="prompt output_prompt">Out[39]:</div>
 
 
 
@@ -15216,7 +15219,7 @@ We will also sort the values by votes.</p>
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[90]:</div>
+<div class="prompt input_prompt">In&nbsp;[40]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">20</span><span class="p">,</span><span class="mi">10</span><span class="p">))</span>
@@ -15271,7 +15274,7 @@ We will also sort the values by votes.</p>
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[91]:</div>
+<div class="prompt input_prompt">In&nbsp;[41]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">fig</span><span class="p">,</span> <span class="n">axes</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">20</span><span class="p">,</span><span class="mi">20</span><span class="p">))</span>
@@ -15341,7 +15344,7 @@ We will also sort the values by votes.</p>
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[92]:</div>
+<div class="prompt input_prompt">In&nbsp;[42]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">fig</span><span class="p">,</span> <span class="n">axes</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">20</span><span class="p">,</span><span class="mi">20</span><span class="p">))</span>
@@ -15394,7 +15397,7 @@ We will also sort the values by votes.</p>
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h2 id="2.3-Further-Analyzing-Top-200-Players-by-Position-and-Conference">2.3 Further Analyzing Top 200 Players by Position and Conference<a class="anchor-link" href="#2.3-Further-Analyzing-Top-200-Players-by-Position-and-Conference">&#182;</a></h2><p>For this part, we will be diving deeper into the top 200 players. First we looked at each position and now we will look at players and conference. One may initially think that conference doesn't matter, but it may have an affect. In the NBA, the Western Conference is significantly better than the Eastern Conference. So we may see the statistics for the western conference be a little bit higher. Instead of using a bar plot, we will use a violin part instead. This allowed for further information that a bar plot does not.</p>
+<h2 id="2.3-Further-Analyzing-Top-200-Players-by-Position-and-Conference">2.3 Further Analyzing Top 200 Players by Position and Conference<a class="anchor-link" href="#2.3-Further-Analyzing-Top-200-Players-by-Position-and-Conference">&#182;</a></h2><p>For this part, we will be diving deeper into the top 200 players. First we looked at each position and now we will look at players and conference. One may initially think that conference doesn't matter, but it may have an affect. In the NBA, the Western Conference is significantly better than the Eastern Conference. So we may see the statistics for the western conference be a little bit higher. Instead of using a bar plot, we will use a violin part instead. This allows for further information that a bar plot does not.</p>
 <p>The Statistics we will be looking at are:</p>
 <ul>
 <li>Points</li>
@@ -15409,7 +15412,7 @@ We will also sort the values by votes.</p>
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[93]:</div>
+<div class="prompt input_prompt">In&nbsp;[43]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">Top_200_Players_Divided</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">Top_200_Players</span><span class="p">)</span>
@@ -15548,7 +15551,7 @@ We will also sort the values by votes.</p>
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[94]:</div>
+<div class="prompt input_prompt">In&nbsp;[44]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">Over_200</span> <span class="o">=</span> <span class="n">Complete_Data</span><span class="p">[(</span><span class="n">Complete_Data</span><span class="p">[</span><span class="s1">&#39;Votes&#39;</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">200</span><span class="p">)]</span>
@@ -15607,7 +15610,7 @@ We will also sort the values by votes.</p>
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[95]:</div>
+<div class="prompt input_prompt">In&nbsp;[45]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="k">def</span> <span class="nf">label_point</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">val</span><span class="p">,</span> <span class="n">ax</span><span class="p">):</span>
@@ -15661,7 +15664,7 @@ We will also sort the values by votes.</p>
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[96]:</div>
+<div class="prompt input_prompt">In&nbsp;[46]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="k">def</span> <span class="nf">label_point_2</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">val</span><span class="p">,</span> <span class="n">ax</span><span class="p">):</span>
@@ -15717,14 +15720,14 @@ We will also sort the values by votes.</p>
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
 <h1 id="4.-Linear-Regression-for-Attributes-on-Rating-and-Votes">4. Linear Regression for Attributes on Rating and Votes<a class="anchor-link" href="#4.-Linear-Regression-for-Attributes-on-Rating-and-Votes">&#182;</a></h1><p>Here, there is a comparison between the Ratings of the top 200 Players to the Votes of the top 200 Players. Both utilize attributes regarding player performances. The ratings from NBA 2k19 game are based on player skills. Popular beliefs would point towards the most skilled players being the most popular players. The Linear Regression Analysis below was done to determine whether or not there is a dichotomy between popularity (vote results) and skill rating.</p>
-<h2 id="4.1-Null-Hypotheses">4.1 Null Hypotheses<a class="anchor-link" href="#4.1-Null-Hypotheses">&#182;</a></h2>
+<h2 id="4.1-Regression">4.1 Regression<a class="anchor-link" href="#4.1-Regression">&#182;</a></h2>
 </div>
 </div>
 </div>
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h3 id="Null-Hypothesis-for-Rating:">Null Hypothesis for Rating:<a class="anchor-link" href="#Null-Hypothesis-for-Rating:">&#182;</a></h3><p>The five Skill Sets: Points, Rebounds, Assists, Blocks, Steals per game do not affect the Rating.
+<h3 id="Linear-Regression-Model-for-Rating:">Linear Regression Model for Rating:<a class="anchor-link" href="#Linear-Regression-Model-for-Rating:">&#182;</a></h3><p>The five Skill Sets: Points, Rebounds, Assists, Blocks, Steals per game do not affect the Rating.
 Independent Variables: Points, Rebounds, Assists, Blocks, Steals
 Dependent Variable: Rating</p>
 
@@ -15733,7 +15736,7 @@ Dependent Variable: Rating</p>
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[97]:</div>
+<div class="prompt input_prompt">In&nbsp;[47]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">skills</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;Points&#39;</span><span class="p">,</span><span class="s1">&#39;Rebounds&#39;</span><span class="p">,</span><span class="s1">&#39;Assists&#39;</span><span class="p">,</span><span class="s1">&#39;Blocks&#39;</span><span class="p">,</span><span class="s1">&#39;Steals&#39;</span><span class="p">]</span>
@@ -15757,7 +15760,7 @@ Dependent Variable: Rating</p>
 
 <div class="output_area">
 
-    <div class="prompt output_prompt">Out[97]:</div>
+    <div class="prompt output_prompt">Out[47]:</div>
 
 
 
@@ -15782,7 +15785,7 @@ Dependent Variable: Rating</p>
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[98]:</div>
+<div class="prompt input_prompt">In&nbsp;[48]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">rating_coeffs</span> <span class="o">=</span> <span class="n">lm</span><span class="o">.</span><span class="n">coef_</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
@@ -15828,7 +15831,7 @@ Skill: Steals, Coefficient: 0.4498502095293797
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h3 id="Null-Hypothesis-for-Votes:">Null Hypothesis for Votes:<a class="anchor-link" href="#Null-Hypothesis-for-Votes:">&#182;</a></h3><p>The five skill sets: Points, Rebounds, Assists, Blocks, Steals per game do not affect the Rating.
+<h3 id="Linear-Regression-Model-for-Votes:">Linear Regression Model for Votes:<a class="anchor-link" href="#Linear-Regression-Model-for-Votes:">&#182;</a></h3><p>The five skill sets: Points, Rebounds, Assists, Blocks, Steals per game do not affect the Rating.
 Independent Variables: Points, Rebounds, Assists, Blocks, Steals
 Dependent Variable: Votes</p>
 
@@ -15837,7 +15840,7 @@ Dependent Variable: Votes</p>
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[99]:</div>
+<div class="prompt input_prompt">In&nbsp;[49]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">skills2</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;Points&#39;</span><span class="p">,</span><span class="s1">&#39;Rebounds&#39;</span><span class="p">,</span><span class="s1">&#39;Assists&#39;</span><span class="p">,</span><span class="s1">&#39;Blocks&#39;</span><span class="p">,</span><span class="s1">&#39;Steals&#39;</span><span class="p">]</span>
@@ -15860,7 +15863,7 @@ Dependent Variable: Votes</p>
 
 <div class="output_area">
 
-    <div class="prompt output_prompt">Out[99]:</div>
+    <div class="prompt output_prompt">Out[49]:</div>
 
 
 
@@ -15885,7 +15888,7 @@ Dependent Variable: Votes</p>
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[100]:</div>
+<div class="prompt input_prompt">In&nbsp;[50]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">voting_coeffs</span> <span class="o">=</span> <span class="n">lf</span><span class="o">.</span><span class="n">coef_</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
@@ -15931,13 +15934,21 @@ Attribute: Steals, Coefficient: 2.2215398148323953
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h2 id="4.2-Prediction-of-Ratings-vs-Prediction-of-Votes">4.2 Prediction of Ratings vs Prediction of Votes<a class="anchor-link" href="#4.2-Prediction-of-Ratings-vs-Prediction-of-Votes">&#182;</a></h2>
+<h2 id="4.2-Prediction-of-Ratings-vs-Prediction-of-Votes-(Machine-Learning)">4.2 Prediction of Ratings vs Prediction of Votes (Machine Learning)<a class="anchor-link" href="#4.2-Prediction-of-Ratings-vs-Prediction-of-Votes-(Machine-Learning)">&#182;</a></h2><p>Here, we predict Ratings and Votes by splitting and training our data to create predictions. We use a test_size of 0.2 for both Ratings and Votes.</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Creating-Predictions-for-Ratings">Creating Predictions for Ratings<a class="anchor-link" href="#Creating-Predictions-for-Ratings">&#182;</a></h2>
 </div>
 </div>
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[101]:</div>
+<div class="prompt input_prompt">In&nbsp;[51]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">X_train</span><span class="p">,</span> <span class="n">X_test</span><span class="p">,</span> <span class="n">y_train</span><span class="p">,</span> <span class="n">y_test</span> <span class="o">=</span> <span class="n">train_test_split</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">test_size</span><span class="o">=</span><span class="mf">0.2</span><span class="p">,</span> <span class="n">random_state</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
@@ -15961,7 +15972,7 @@ Attribute: Steals, Coefficient: 2.2215398148323953
 
 <div class="output_area">
 
-    <div class="prompt output_prompt">Out[101]:</div>
+    <div class="prompt output_prompt">Out[51]:</div>
 
 
 
@@ -15993,7 +16004,7 @@ Attribute: Steals, Coefficient: 2.2215398148323953
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[102]:</div>
+<div class="prompt input_prompt">In&nbsp;[52]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;On scale from 0 to 1, the number to the right is how accurate the model predicts Ratings: &quot;</span><span class="p">,</span> <span class="n">prediction_model</span><span class="o">.</span><span class="n">score</span><span class="p">(</span><span class="n">X_test</span><span class="p">,</span> <span class="n">y_test</span><span class="p">))</span>
@@ -16030,9 +16041,16 @@ Attribute: Steals, Coefficient: 2.2215398148323953
 </div>
 </div>
 </div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Creating-Predictions-for-Votes">Creating Predictions for Votes<a class="anchor-link" href="#Creating-Predictions-for-Votes">&#182;</a></h2>
+</div>
+</div>
+</div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[103]:</div>
+<div class="prompt input_prompt">In&nbsp;[53]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">X_train</span><span class="p">,</span> <span class="n">X_test</span><span class="p">,</span> <span class="n">y_train</span><span class="p">,</span> <span class="n">y_test</span> <span class="o">=</span> <span class="n">train_test_split</span><span class="p">(</span><span class="n">X2</span><span class="p">,</span> <span class="n">y2</span><span class="p">,</span> <span class="n">test_size</span><span class="o">=</span><span class="mf">0.2</span><span class="p">,</span> <span class="n">random_state</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
@@ -16056,7 +16074,7 @@ Attribute: Steals, Coefficient: 2.2215398148323953
 
 <div class="output_area">
 
-    <div class="prompt output_prompt">Out[103]:</div>
+    <div class="prompt output_prompt">Out[53]:</div>
 
 
 
@@ -16096,7 +16114,7 @@ Attribute: Steals, Coefficient: 2.2215398148323953
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[104]:</div>
+<div class="prompt input_prompt">In&nbsp;[54]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;On scale from 0 to 1, the number to the right is how accurate the model predicts Votes: &quot;</span><span class="p">,</span> <span class="n">prediction_model</span><span class="o">.</span><span class="n">score</span><span class="p">(</span><span class="n">X_test</span><span class="p">,</span> <span class="n">y_test</span><span class="p">))</span>
@@ -16131,6 +16149,22 @@ Attribute: Steals, Coefficient: 2.2215398148323953
 <h1 id="5.-Conclusion">5. Conclusion<a class="anchor-link" href="#5.-Conclusion">&#182;</a></h1><h2 id="5.1:-Top-200-Players">5.1: Top 200 Players<a class="anchor-link" href="#5.1:-Top-200-Players">&#182;</a></h2><p>From an analysis on the top 200 players, the top 10 players with the top votes tend to have top attribute values compared to the average attribute values of the top 200 players. This points towards the idea that the most voted players also tend to be the best performing players. Also an analysis was done on conference area performance where it was indicated that the differences were rather minute in terms of skill level.</p>
 <h2 id="5.2:-Potential-Outliers">5.2: Potential Outliers<a class="anchor-link" href="#5.2:-Potential-Outliers">&#182;</a></h2><p>From an analysis on the outliers, it seems that Giannis Antetokounmpo has significantly more votes than similar performing players. This indicates that there may perhaps be other factors beyond basketball skill attributes such as popularity, media coverage, etc.</p>
 <h2 id="5.3:-Regression-Analysis-(Ratings-vs-Votes)">5.3: Regression Analysis (Ratings vs Votes)<a class="anchor-link" href="#5.3:-Regression-Analysis-(Ratings-vs-Votes)">&#182;</a></h2><p>The Regression Analysis above indicates that the Linear Regression Models predicted the Top Players ratings rather accurately. However, the Linear Regression Models seem to not predict the Top Player Votes accurately. This indicates that there are interaction terms besides skillsets that predict or indicate popularity (Votes).</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>In general, the top voted players are what you expect, the top rated or most skillful players. On the other hand, the outliers and the fact that the skill attributes don't predict Votes as much as Ratings signal external interaction terms that are not included in a basketball player's skillset, but rather other factors related to popularity.</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>The CSV files used can be found at: <a href="https://github.com/rlin964080/rlin964080.github.io">https://github.com/rlin964080/rlin964080.github.io</a></p>
 
 </div>
 </div>
